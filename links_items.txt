@@ -1,0 +1,18 @@
+Lump of Clay/Clay Lump
+44 Magnum Bullet/44mag Bullet
+Small Stone/Rock small
+Adobe Peach Block/Adobe Peach Cnr Full/Adobe Peach Cnr Inside/Adobe Peach Cnr Ramp/Adobe Peach Pillar100/Adobe Peach Pillar50
+Adobe White Block/Adobe White Arrow Slit Half/Adobe White Cnr Full/Adobe White Cnr Inside/Adobe White Cnr Ramp/Adobe White Pillar100/Adobe White Pillar50
+Iron (Forge)/Unit Iron
+Clay (Forge)/Unit Clay
+Glass (Forge)/Unit Glass
+Handlebars/Parts Handlebars
+Auger Parts/Parts Auger Parts
+Auger Blade/Parts Auger Blade
+Awning/Awning Red Block/Awning Red Cnr Full/Awning Red Cnr Inside/Awning Red Cnr Round/Awning Red Cnr Round Top/Awning Red Gable/Awning Red Pyramid/Awning Red Ramp
+Nails/Nail
+Electrical Parts/Electric Parts
+Electronic Components/Electronic Parts
+Short Iron Pipe/Short Metal Pipe
+Bucket of Water/Bucket Water
+First Aid Bandage/Bandage

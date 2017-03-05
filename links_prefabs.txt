@@ -1,0 +1,49 @@
+Factory/factory_lg
+Junk Yard/junkyard_med/junkyard_lg
+Police Station/police_station
+Army Base/army_camp/army_barracks
+Auto Parts Store/store_autoparts
+High School/school
+Shotgun Messiah Gun Store/store_gun_lg/store_gun_sm
+Traders/settlement_trader
+Barn/barn
+Bridge/bridge_wood
+Pass n Gas Gas Station/gas_station
+Hotel/hotel_new/hotel_ostrich/hotel_roadside
+Church/church_graveyard
+Pop-N-Pills/store_pharmacy_sm
+Sawmill/sawmill_01_snow
+Ski Lodge/snowy_ski_lodge
+Working Stiffs Hardware Store/store_hardware_lg/store_hardware_sm
+Born & Noble Book Store/store_book_lg/store_book_sm
+Shamway Grocery Store/store_grocery_lg/store_grocery_sm
+Book Store/store_book_lg/store_book_sm
+Skate Park/skate_park
+Movie Theater/theater
+Cell Tower/utility_celltower
+Electric Co/utility_electric_co
+Refinery/utility_refinery
+Bank/store_bank_lg
+Football Stadium/football_stadium
+Funeral Home/funeral_home
+Red Mesa/installation_red_mesa
+Campsite/campsite/campsite_06a/campsite_07a
+Cemetery/cemetery
+Diner/diner
+Docks/docks
+Trailer Park/trailer_park
+Prison/prison
+Water Treatment Facility/utility_waterworks
+Bar/bar_sm
+Strip Club/bar_stripclub
+Theatre/bar_theater
+Cabin/cabin/cabin_02_sm/cabin_03_lg/cabin_04_md/cabin_05_lg/cabin_06_lg/cabin_snow_hidden
+Hospital/hospital
+Indian Burial Grounds/indian_burial_grounds
+Parking Garage/parking_garage
+Ranger Station/ranger_station
+Settlement/settlement
+Bomb Shelter/bombshelter_lg/bombshelter_md
+Canyon Gift Shop/canyon_gift_shop
+Cliff Dwellings/canyon_cliff_dwellings
+Canyon Mine/canyon_mine

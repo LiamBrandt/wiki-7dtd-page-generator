@@ -1,4 +1,5 @@
 import csv
+import os
 from re import finditer
 
 class WikiString(object):
@@ -178,10 +179,11 @@ def convert_to_link(text, link_type, use_get_variant=False):
 def get_path_settings():
     path_settings = {
         "filter": "",
+        "version": "current",
         "folder_7dtd": "F:/SteamLibrary/steamapps/common/7 Days To Die/",
     }
     path_settings["folder_data"] = path_settings["folder_7dtd"] + "Data/"
-    path_settings["folder_wiki_pages"] = "./wiki_pages/"
+    path_settings["folder_wiki_pages"] = "./wiki_pages/" + path_settings["version"] + "/"
     path_settings["folder_prefabs"] = path_settings["folder_data"] + "Prefabs/"
     path_settings["folder_config"] = path_settings["folder_data"] + "Config/"
 
@@ -190,5 +192,10 @@ def get_path_settings():
     path_settings["xml_navezgane_prefabs"] = path_settings["folder_data"] + "Worlds/Navezgane/prefabs.xml"
 
     path_settings["txt_localization"] = path_settings["folder_config"] + "Localization.txt"
+
+
+    #make folders
+    if not os.path.exists(path_settings["folder_wiki_pages"]):
+        os.makedirs(path_settings["folder_wiki_pages"])
 
     return path_settings

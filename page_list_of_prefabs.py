@@ -4,6 +4,7 @@ from xml.etree import ElementTree
 from collections import OrderedDict
 
 from wiki import WikiString, WikiList, WikiTable, get_path_settings, get_variant
+from page_random_world_generation import get_prefab_rules, get_possible_prefabs
 
 def flip(num):
     return 1 ^ num
@@ -28,10 +29,16 @@ class PrefabWikiTable(WikiTable):
         if key == "Locations":
             table_file.write(key + " in [[Navezgane]]")
             return
+        elif key == "Random World Generation":
+            table_file.write("[[" + key + "|RWG]]")
+            return
         table_file.write(key)
 
 def create_table_prefabs(path_settings):
     unused_keys = []
+
+    prefab_rules = get_prefab_rules(path_settings)
+    possible_prefabs = get_possible_prefabs(prefab_rules)
 
     #create List of Prefabs table
     table = OrderedDict()
@@ -55,7 +62,10 @@ def create_table_prefabs(path_settings):
                     ("Zoning", WikiString("", "zones")),
                     ("Townships", WikiList()),
                     ("Locations", WikiList()),
+                    ("Random World Generation", WikiString("No", None, no_format=True)),
                 ])
+                if prefab_name+variant in possible_prefabs:
+                    table[prefab_name]["Random World Generation"] = WikiString("Yes", None, no_format=True)
                 if variant != "":
                     table[prefab_name]["Variants"].add_string(WikiString(variant, None, no_format=True))
 

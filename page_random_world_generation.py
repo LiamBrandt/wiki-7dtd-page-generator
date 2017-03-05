@@ -59,9 +59,7 @@ class Prefab(object):
         write_file.write(str("{0:.2f}".format(self.attrib["prob"]*100.0)) + "% chance")
         write_file.write("\n")
 
-def main():
-    path_settings = get_path_settings()
-
+def get_prefab_rules(path_settings):
     prefab_rules = []
 
     root = ElementTree.parse(path_settings["xml_rwgmixer"]).getroot()
@@ -83,17 +81,30 @@ def main():
                     new_rule_object.calculate_and_set_probs()
                     prefab_rules.append(new_rule_object)
 
-    #write the random_world_generation.txt
-    write_file = open(path_settings["folder_wiki_pages"] + "page_random_world_generation.txt", "w")
-    write_file.truncate()
-    for prefab_rule in prefab_rules:
-        prefab_rule.write(write_file)
+    return prefab_rules
 
+def get_possible_prefabs(prefab_rules):
     top_level_rules = ["townBuildings", "wastelandHub", "wildernessPOIs"]
     possible_prefabs = []
     for prefab_rule in prefab_rules:
         if prefab_rule.name in top_level_rules:
             possible_prefabs += prefab_rule.grab_nested_prefabs(prefab_rules)
+
+    return possible_prefabs
+
+def main():
+    path_settings = get_path_settings()
+
+    prefab_rules = get_prefab_rules(path_settings)
+
+    #write the random_world_generation.txt
+    write_file = open(path_settings["folder_wiki_pages"] + "page_random_world_generation.txt", "w")
+    write_file.truncate()
+    for prefab_rule in prefab_rules:
+        prefab_rule.write(write_file)
+    write_file.close()
+
+    possible_prefabs = get_possible_prefabs(prefab_rules)
 
     all_prefabs = []
     for prefab_rule in prefab_rules:

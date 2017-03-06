@@ -56,7 +56,7 @@ class Prefab(object):
         else:
             write_file.write("ERROR - ")
 
-        write_file.write(str("{0:.2f}".format(self.attrib["prob"]*100.0)) + "% chance")
+        write_file.write(str(('%.2f' % (self.attrib["prob"]*100.0)).rstrip('0').rstrip('.')) + "% chance")
         write_file.write("\n")
 
 def get_prefab_rules(path_settings):

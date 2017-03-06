@@ -1,0 +1,5 @@
+{
+    "filter": "",
+    "version": "current",
+    "folder_7dtd": "F:/SteamLibrary/steamapps/common/7 Days To Die/",
+}

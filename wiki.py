@@ -177,11 +177,9 @@ def convert_to_link(text, link_type, use_get_variant=False):
     return text
 
 def get_path_settings():
-    path_settings = {
-        "filter": "",
-        "version": "current",
-        "folder_7dtd": "F:/SteamLibrary/steamapps/common/7 Days To Die/",
-    }
+    with open("./settings.txt", "r") as settings_file:
+        path_settings = eval(settings_file.read())
+
     path_settings["folder_data"] = path_settings["folder_7dtd"] + "Data/"
     path_settings["folder_wiki_pages"] = "./wiki_pages/" + path_settings["version"] + "/"
     path_settings["folder_prefabs"] = path_settings["folder_data"] + "Prefabs/"

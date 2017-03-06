@@ -4,7 +4,7 @@ Tool to create tables of information and pages in [wiki markup](https://www.medi
 Written for [Python 3](https://www.python.org/ftp/python/3.6.0/python-3.6.0.exe).
 
 ## Usage
-To generate some wiki markup for a page, just run one of the python files that begin with `page_`. The output should be stored in a folder `wiki_pages/version/`.
+To generate some wiki markup for a page, just run one of the python files that begin with `page_*.py`. The output should be stored in a folder `wiki_pages/version/`.
 
 Not every page python file generates a full page, some just print out information that could be helpful like `page_prefabs.py`.
 
@@ -23,4 +23,4 @@ Don't forget to change `settings.txt` to the path to your 7 Days To Die director
 
 - `settings.txt` - Change the path to your 7 Days To Die directory in here. You can also change the version which affects the name of the output folder, as well as the filter to filter out prefabs with specific names in the `page_list_of_prefabs.py`.
 
-- `links_*.txt` - A WikiString will look for links in these files based on the link_type to see if it can link to a page that already exists on the wiki. The items in each file are separated by `/`, the first item being the name of the page on the wiki, and any items after being the names that should link to that page contained in the first item.
+- `links/links_*.txt` - A WikiString will look for links in these files based on the link_type to see if it can link to a page that already exists on the wiki. The items in each file are separated by `/`, the first item being the name of the page on the wiki, and any items after being the names that should link to that page contained in the first item.

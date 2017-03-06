@@ -31,7 +31,7 @@ class WikiString(object):
         if link_type == None:
             return
 
-        link_file = open("links_" + link_type + ".txt", "r")
+        link_file = open("./links/links_" + link_type + ".txt", "r")
         for line in link_file.readlines():
             #list of items on the line
             line_list = line.replace("\n", "").split("/")
@@ -161,7 +161,7 @@ def convert_to_link(text, link_type, use_get_variant=False):
     if use_get_variant:
         text, variant = get_variant(text)
 
-    link_file = open("links_" + link_type + ".txt", "r")
+    link_file = open("./links/links_" + link_type + ".txt", "r")
     for line in link_file.readlines():
         #list of items on the line
         line_list = line.replace("\n", "").split("/")

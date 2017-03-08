@@ -47,3 +47,4 @@ Bomb Shelter/bombshelter_lg/bombshelter_md
 Canyon Gift Shop/canyon_gift_shop
 Cliff Dwellings/canyon_cliff_dwellings
 Canyon Mine/canyon_mine
+Farm Shed/farm_shed

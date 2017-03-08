@@ -4,6 +4,7 @@ from re import finditer
 
 class WikiString(object):
     def __init__(self, original, link_type, no_format=False, prefix="", postfix="", is_link=False):
+        self.original = original
         if no_format:
             self.text = original
         else:
@@ -187,6 +188,7 @@ def get_path_settings():
 
     path_settings["xml_recipes"] = path_settings["folder_config"] + "recipes.xml"
     path_settings["xml_rwgmixer"] = path_settings["folder_config"] + "rwgmixer.xml"
+    path_settings["xml_blocks"] = path_settings["folder_config"] + "blocks.xml"
     path_settings["xml_navezgane_prefabs"] = path_settings["folder_data"] + "Worlds/Navezgane/prefabs.xml"
 
     path_settings["txt_localization"] = path_settings["folder_config"] + "Localization.txt"

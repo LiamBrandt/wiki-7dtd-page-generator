@@ -2,3 +2,4 @@ __pycache__
 backup_python
 extract_7rg
 wiki_pages
+*.png

@@ -201,6 +201,7 @@ def get_path_settings():
 
     path_settings["folder_data"] = path_settings["folder_7dtd"] + "Data/"
     path_settings["folder_wiki_pages"] = "./wiki_pages/" + path_settings["version"] + "/"
+    path_settings["folder_map_images"] = "./map_images/" + path_settings["version"] + "/"
     path_settings["folder_prefabs"] = path_settings["folder_data"] + "Prefabs/"
     path_settings["folder_config"] = path_settings["folder_data"] + "Config/"
 
@@ -213,7 +214,9 @@ def get_path_settings():
 
 
     #make folders
-    if not os.path.exists(path_settings["folder_wiki_pages"]):
-        os.makedirs(path_settings["folder_wiki_pages"])
+    folders_to_create = ["folder_wiki_pages", "folder_map_images"]
+    for new_folder_name in folders_to_create:
+        if not os.path.exists(path_settings[new_folder_name]):
+            os.makedirs(path_settings[new_folder_name])
 
     return path_settings

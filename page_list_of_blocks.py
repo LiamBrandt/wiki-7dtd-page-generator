@@ -21,23 +21,16 @@ def create_table_blocks(path_settings):
 
     root = ElementTree.parse(path_settings["xml_blocks"]).getroot()
 
-    allowed_property_names = ["Extends", "Group", "Material", "Shape", "Weight", "FuelValue"]
-    #create a list of all of the names of properties for the blocks
-    """list_of_property_names = []
-    for block in root:
-        for subitem in block:
-            if subitem.tag == "property":
-                if "name" in subitem.attrib:
-                    if subitem.attrib["name"] not in list_of_property_names and subitem.attrib["name"] in allowed_property_names:
-                        list_of_property_names.append(subitem.attrib["name"])"""
-    list_of_property_names = allowed_property_names
-
+    list_of_property_names = ["Extends", "Group", "Material", "Shape", "Weight", "FuelValue"]
+    unrecorded_property_names = ["IsDeveloper"]
     print(list_of_property_names)
+
+    developer_block_names = []
 
     for block in root:
         block_name = block.attrib["name"]
         table[block_name] = OrderedDict([
-            ("Block", WikiString(block_name, "items", is_link=True)),
+            ("Block", WikiString(block_name, "blocks", is_link=True)),
             ("Id", WikiString(block.attrib["id"], None)),
         ])
         for property_name in list_of_property_names:
@@ -49,12 +42,16 @@ def create_table_blocks(path_settings):
         for subitem in block:
             if subitem.tag == "property":
                 if "name" in subitem.attrib:
-                    if subitem.attrib["name"] in list_of_property_names:
+                    if subitem.attrib["name"] in list_of_property_names or subitem.attrib["name"] in unrecorded_property_names:
                         if subitem.attrib["name"] == "Extends":
-                            table[block_name]["Extends"] = WikiString(subitem.attrib["value"], "items", is_link=True)
+                            table[block_name]["Extends"] = WikiString(subitem.attrib["value"], "blocks", is_link=True)
                         elif subitem.attrib["name"] == "Group":
                             for each_group in subitem.attrib["value"].split(","):
                                 table[block_name]["Group"].add_string(WikiString(each_group, None, is_link=True))
+                        elif subitem.attrib["name"] == "IsDeveloper":
+                            if subitem.attrib["value"] == "true":
+                                print("Dev block: " + block_name)
+                                developer_block_names.append(block_name)
                         else:
                             table[block_name][subitem.attrib["name"]] = WikiString(subitem.attrib["value"], None)
 
@@ -63,11 +60,20 @@ def create_table_blocks(path_settings):
         #if this block extends another block
         if "Extends" in block:
             if not block["Extends"].is_empty():
+                #make sure no extends links to a developer block
+                if block["Extends"].original in developer_block_names:
+                    block["Extends"] = WikiString(block["Extends"].original, "blocks")
+
                 parent_name = block["Extends"].original
                 parent_block = table[parent_name]
                 for key, value in parent_block.items():
+                    #if the value we are copying into is empty and the value we are copying is not empty
                     if block[key].is_empty() and not value.is_empty():
                         block[key] = value
+
+    #delete all developer blocks that may have already been extended for use in other blocks
+    for dev_block_name in developer_block_names:
+        del table[dev_block_name]
 
     return table
 

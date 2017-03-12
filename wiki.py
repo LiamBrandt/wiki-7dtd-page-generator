@@ -11,7 +11,7 @@ class WikiString(object):
             self.text = name_to_wiki_name(original)
 
         #use localization to get a better name for the wiki
-        if link_type == "items":
+        if link_type == "items" or link_type == "blocks":
             with open(get_path_settings()["txt_localization"], newline="", encoding="utf-8") as csvfile:
                 reader = csv.reader(csvfile, delimiter=",")
                 for row in reader:
@@ -31,17 +31,29 @@ class WikiString(object):
     def check_for_link(self, link_type):
         if link_type == None:
             return
+        elif link_type == "blocks":
+            block_variants = ["1/2 Block", "1/4 Block", "1/8 Block", "Arrow Slit",
+                "Corner Round", "Corner Round Top", "Full Corner", "Inside Corner",
+                "Pillar 100", "Pillar 50", "Plate", "Plate Centered", "Pole", "Pyramid",
+                "Ramp", "Ramp Corner", "Stairs25", "Stairs", "Support", "Wedge",
+                "Wedge Tip"]
 
-        link_file = open("./links/links_" + link_type + ".txt", "r")
-        for line in link_file.readlines():
-            #list of items on the line
-            line_list = line.replace("\n", "").split("/")
-            if self.text in line_list:
-                #create a link
-                self.link = line_list[0]
+            for block_variant in block_variants:
+                if self.text.endswith(block_variant):
+                    #set the link to link to the page without the variant
+                    self.link = self.text.split(block_variant)[0].strip() + " Block"
+                    print("Relinked Block Variant: " + self.text + " to " + self.link)
+                    break
+        else:
+            link_file = open("./links/links_" + link_type + ".txt", "r")
+            for line in link_file.readlines():
+                #list of items on the line
+                line_list = line.replace("\n", "").split("/")
+                if self.text in line_list:
+                    #create a link
+                    self.link = line_list[0]
 
-        link_file.close()
-        return None
+            link_file.close()
 
     def get_wiki_text(self):
         if self.link != None and self.text != None:
@@ -140,7 +152,13 @@ def title_custom(name):
     word_list = " ".join(name.split("_")).split()
     for i in range(len(word_list)):
         word_list[i] = word_list[i].capitalize()
-    return " ".join(word_list)
+    full_name = " ".join(word_list)
+    for i in range(len(full_name)):
+        if full_name[i] == "/":
+            if i+1 < len(full_name):
+                full_name = full_name[:i+1] + full_name[i+1:].title()
+
+    return full_name
 
 def name_to_wiki_name(name):
     return title_custom(" ".join(camel_case_split(name))).replace("_", " ")

@@ -1,0 +1,8 @@
+army_base/army_barracks/army_camp
+bombshelter/bombshelter_lg/bombshelter_md
+cabin/cabin_02_sm/cabin_03_lg/cabin_04_md/cabin_05_lg/cabin_06_lg/cabin_snow_hidden
+campsite/campsite_06a/campsite_07a
+garage/garageblue/garagebrick/garageburnt/garagegreen/garagestucco/garagetan/garagewhite/garageyellow
+hotel/hotel_new/hotel_roadside/hotel_ostrich
+junkyard/junkyard_lg/junkyard_med
+bridge/bridge_asphalt/bridge_asphalt_broken/bridge_concrete/bridge_wood

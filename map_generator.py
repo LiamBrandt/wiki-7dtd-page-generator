@@ -34,12 +34,18 @@ def main():
     map_image = pygame.transform.smoothscale(pygame.image.load("map.png"), target_size)
     circle_image = pygame.transform.smoothscale(pygame.image.load("circle.png"), (int(target_size[0]/target_marker_ratio[0]), int(target_size[1]/target_marker_ratio[1])))
 
+    combined_lines = [line.rstrip("\n") for line in open("combined_prefabs.txt")]
     root = ElementTree.parse(path_settings["xml_navezgane_prefabs"]).getroot()
-
     prefab_positions = {}
     for decoration in root:
         prefab_name = get_variant(decoration.attrib["name"])[0]
         prefab_position = decoration.attrib["position"]
+        for combined_line in combined_lines:
+            param_list = combined_line.split("/")
+            if prefab_name in param_list:
+                prefab_name = param_list[0]
+
+        #check if we already have another location stored
         if prefab_name not in prefab_positions:
             prefab_positions[prefab_name] = [prefab_position]
         else:
@@ -63,8 +69,6 @@ def main():
 
             scaled_x = (target_size[0]/2)+(x/source_target_ratio[0])-(target_size[0]/target_marker_ratio[0]/2)
             scaled_y = (target_size[1]/2)+(-y/source_target_ratio[1])-(target_size[1]/target_marker_ratio[1]/2)
-
-            print("converted " + position_string + " to " + str(scaled_x) + ", " + str(scaled_y))
 
             out_image.blit(circle_image, (int(scaled_x), int(scaled_y)))
         pygame.image.save(out_image, path_settings["folder_map_images"] + "map_" + prefab_name + ".jpg")

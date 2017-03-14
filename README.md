@@ -4,14 +4,14 @@ Tool to create tables of information and pages in [wiki markup](https://www.medi
 Written for [Python 3](https://www.python.org/ftp/python/3.6.0/python-3.6.0.exe).
 
 ## Usage
-To generate some wiki markup for a page, just run one of the python files that begin with `page_*.py`. The output should be stored in a folder `wiki_pages/version/`.
+To generate some wiki markup for a page, just run one of the python files that begin with `page_*.py`. The output should be stored in a folder `output/version/wiki_pages/`.
 
 Not every page python file generates a full page, some just print out information that could be helpful like `page_prefabs.py`.
 
 Don't forget to change `settings.txt` to the path to your 7 Days To Die directory.
 
 ### Explanation of each file
-- `map_generator.py` - Generates a map of Navezgane for each prefab with that prefab circled. Output stored in `map_images`.
+- `map_generator.py` - Generates a map of Navezgane for each prefab with that prefab circled. Output stored in `output/version/map_images/`. To combine maps use the file `combined_prefabs.txt`.
 
 - `page_list_of_blocks.py` - Generates a table of blocks from `Data/Config/blocks.xml`.
 

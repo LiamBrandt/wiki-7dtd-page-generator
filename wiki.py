@@ -218,8 +218,8 @@ def get_path_settings():
         path_settings = eval(settings_file.read())
 
     path_settings["folder_data"] = path_settings["folder_7dtd"] + "Data/"
-    path_settings["folder_wiki_pages"] = "./wiki_pages/" + path_settings["version"] + "/"
-    path_settings["folder_map_images"] = "./map_images/" + path_settings["version"] + "/"
+    path_settings["folder_wiki_pages"] = "./output/" + path_settings["version"] + "/wiki_pages/"
+    path_settings["folder_map_images"] = "./output/" + path_settings["version"] + "/map_images/"
     path_settings["folder_prefabs"] = path_settings["folder_data"] + "Prefabs/"
     path_settings["folder_config"] = path_settings["folder_data"] + "Config/"
 

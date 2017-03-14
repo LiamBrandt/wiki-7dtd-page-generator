@@ -6,3 +6,6 @@ garage/garageblue/garagebrick/garageburnt/garagegreen/garagestucco/garagetan/gar
 hotel/hotel_new/hotel_roadside/hotel_ostrich
 junkyard/junkyard_lg/junkyard_med
 bridge/bridge_asphalt/bridge_asphalt_broken/bridge_concrete/bridge_wood
+house/houseblue/housebrick/housegreen/housestucco/housetan/housetanpyramid/housewhite/housewhitepyramid/houseyellow/houseyellowpyramid
+houseranch/houseranchblue/houseranchtan/houseranchwhite
+house_trailer/house_trailer_blue/house_trailer_green/house_trailer_tan/house_trailer_white/house_trailer_yellow

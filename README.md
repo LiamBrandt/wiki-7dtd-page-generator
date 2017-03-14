@@ -11,7 +11,8 @@ Not every page python file generates a full page, some just print out informatio
 Don't forget to change `settings.txt` to the path to your 7 Days To Die directory.
 
 ### Explanation of each file
-- `map_generator.py` - Generates a map of Navezgane for each prefab with that prefab circled. Output stored in `map_images`
+- `map_generator.py` - Generates a map of Navezgane for each prefab with that prefab circled. Output stored in `map_images`.
+
 - `page_list_of_blocks.py` - Generates a table of blocks from `Data/Config/blocks.xml`.
 
 - `page_list_of_prefabs.py` - Generates a table of prefabs from the random world generation data from `page_random_world_generation.py`, the Navezgane prefab file `Data/Worlds/Navezgane/prefabs.xml` and the individual prefab XML files in `Data/Prefabs/`.

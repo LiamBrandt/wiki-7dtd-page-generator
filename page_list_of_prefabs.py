@@ -1,3 +1,21 @@
+"""
+Part of the 7 Days to Die Wiki Content Generator
+Copyright (C) 2017 Liam Brandt <brandt.liam@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
 import os
 import math
 from xml.etree import ElementTree
@@ -6,11 +24,8 @@ from collections import OrderedDict
 from wiki import WikiString, WikiList, WikiTable, get_path_settings, get_variant
 from page_random_world_generation import get_prefab_rules, get_possible_prefabs
 
-def flip(num):
-    return 1 ^ num
-
-def sign(num):
-    return flip((num >> 31) & 0x1)
+def get_sign(num):
+    return 1 ^ ((num >> 31) & 0x1)
 
 class PrefabWikiTable(WikiTable):
     def write_entry(self, key, value, table_file):
@@ -103,12 +118,12 @@ def create_table_prefabs(path_settings):
                 x = int(coords[0])
                 z = int(coords[2])
                 location = str(int(math.fabs(z)))
-                if sign(z):
+                if get_sign(z):
                     location += " N, "
                 else:
                     location += " S, "
                 location += str(int(math.fabs(x)))
-                if sign(x):
+                if get_sign(x):
                     location += " E"
                 else:
                     location += " W"

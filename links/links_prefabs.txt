@@ -7,7 +7,7 @@ High School/school
 Shotgun Messiah Gun Store/store_gun_lg/store_gun_sm
 Traders/settlement_trader
 Barn/barn
-Bridge/bridge_wood
+Bridge/bridge_wood/bridge_asphalt/bridge_asphalt_broken/bridge_concrete/bridge_wood2_sm/bridge_wood3_sm
 Pass n Gas Gas Station/gas_station
 Hotel/hotel_new/hotel_ostrich/hotel_roadside
 Church/church_graveyard

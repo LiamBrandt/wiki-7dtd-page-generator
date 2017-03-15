@@ -37,11 +37,12 @@ class BlockWikiTable(WikiTable):
 def create_table_blocks(path_settings):
     table = OrderedDict()
 
-    root = ElementTree.parse(path_settings["xml_blocks"]).getroot()
+    recipe_root = ElementTree.parse(path_settings["xml_recipes"]).getroot()
+    recipe_names = []
+    for recipe in recipe_root:
+        recipe_names.append(recipe.attrib["name"])
 
-    list_of_property_names = ["Extends", "Group", "Material", "Shape", "Weight", "FuelValue"]
-    unrecorded_property_names = ["IsDeveloper"]
-    print(list_of_property_names)
+    root = ElementTree.parse(path_settings["xml_blocks"]).getroot()
 
     developer_block_names = []
 
@@ -50,46 +51,64 @@ def create_table_blocks(path_settings):
         table[block_name] = OrderedDict([
             ("Block", WikiString(block_name, "blocks", is_link=True)),
             ("Id", WikiString(block.attrib["id"], None)),
+            ("Upgrades To", WikiString("", None)),
+            ("Downgrades To", WikiString("", None)),
+            ("Extends", WikiString("", None)),
+            ("Craftable", WikiString("No", None)),
+            ("Group", WikiList()),
+            ("Shape", WikiString("", None)),
         ])
-        for property_name in list_of_property_names:
-            if property_name == "Group":
-                table[block_name]["Group"] = WikiList()
-            else:
-                table[block_name][property_name] = WikiString("", None)
 
-        for subitem in block:
-            if subitem.tag == "property":
-                if "name" in subitem.attrib:
-                    if subitem.attrib["name"] in list_of_property_names or subitem.attrib["name"] in unrecorded_property_names:
-                        if subitem.attrib["name"] == "Extends":
-                            table[block_name]["Extends"] = WikiString(subitem.attrib["value"], "blocks", is_link=True)
-                        elif subitem.attrib["name"] == "Group":
-                            for each_group in subitem.attrib["value"].split(","):
-                                table[block_name]["Group"].add_string(WikiString(each_group, None, is_link=True))
-                        elif subitem.attrib["name"] == "IsDeveloper":
-                            if subitem.attrib["value"] == "true":
-                                print("Dev block: " + block_name)
-                                developer_block_names.append(block_name)
-                        else:
-                            table[block_name][subitem.attrib["name"]] = WikiString(subitem.attrib["value"], None)
+        if block_name in recipe_names:
+            table[block_name]["Craftable"] = WikiString("Yes", None)
+
+        for block_property in block:
+            if block_property.tag == "property":
+                #property has a name
+                if "name" in block_property.attrib:
+                    property_name = block_property.attrib["name"]
+                    property_value = block_property.attrib["value"]
+                    if property_name == "Extends":
+                        table[block_name]["Extends"] = WikiString(property_value, "blocks", is_link=True)
+                    elif property_name == "Group":
+                        for each_group in property_value.split(","):
+                            table[block_name]["Group"].add_string(WikiString(each_group, None, is_link=True))
+                    elif property_name == "IsDeveloper":
+                        if property_value == "true":
+                            developer_block_names.append(block_name)
+                    elif property_name == "DowngradeBlock":
+                        table[block_name]["Downgrades To"] = WikiString(property_value, "blocks", is_link=True)
+                    elif property_name in table[block_name]:
+                        table[block_name][property_name] = WikiString(property_value, None)
+                #property has a class with sub properties
+                elif "class" in block_property.attrib:
+                    if block_property.attrib["class"] == "UpgradeBlock":
+                        for upgrade_property in block_property:
+                            property_name = upgrade_property.attrib["name"]
+                            property_value = upgrade_property.attrib["value"]
+                            if property_name == "ToBlock":
+                                table[block_name]["Upgrades To"] = WikiString(property_value, "blocks", is_link=True)
+
+    #go back an remove links to dev blocks
+    keys_to_remove_dev_links = ["Extends", "Upgrades To", "Downgrades To"]
+    for block_name, block in table.items():
+        for key in keys_to_remove_dev_links:
+            if not block[key].is_empty():
+                if block[key].original in developer_block_names:
+                    block[key] = WikiString(block[key].original, "blocks")
 
     #go back and apply extended properties
     for block_name, block in table.items():
         #if this block extends another block
-        if "Extends" in block:
-            if not block["Extends"].is_empty():
-                #make sure no extends links to a developer block
-                if block["Extends"].original in developer_block_names:
-                    block["Extends"] = WikiString(block["Extends"].original, "blocks")
+        if not block["Extends"].is_empty():
+            parent_name = block["Extends"].original
+            parent_block = table[parent_name]
+            for key, value in parent_block.items():
+                #if the value we are copying into is empty and the value we are copying is not empty
+                if block[key].is_empty() and not value.is_empty():
+                    block[key] = value
 
-                parent_name = block["Extends"].original
-                parent_block = table[parent_name]
-                for key, value in parent_block.items():
-                    #if the value we are copying into is empty and the value we are copying is not empty
-                    if block[key].is_empty() and not value.is_empty():
-                        block[key] = value
-
-    #delete all developer blocks that may have already been extended for use in other blocks
+    #delete all developer blocks that may have already been used to extend non developer blocks
     for dev_block_name in developer_block_names:
         del table[dev_block_name]
 

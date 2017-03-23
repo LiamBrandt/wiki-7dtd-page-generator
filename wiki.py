@@ -28,20 +28,64 @@ class WikiString(object):
         else:
             self.text = name_to_wiki_name(original)
 
-        #use localization to get a better name for the wiki
-        if link_type == "items" or link_type == "blocks":
-            with open(get_path_settings()["txt_localization"], newline="", encoding="utf-8") as csvfile:
-                reader = csv.reader(csvfile, delimiter=",")
-                for row in reader:
-                    if row[0] == original:
-                        self.text = row[4]
-
         self.prefix = prefix
         self.postfix = postfix
 
         self.link = None
-        #automatically make this a link
-        if is_link:
+
+        #if this is a block with a variant, make link point to the block not the variant
+        if link_type == "blocks":
+            block_variants = ["Half", "Quarter", "ThreeQuarters", "Eighth", "ArrowSlitHalf",
+                "CNRRound", "CNRRoundTop", "CNRFull", "CNRInside", "CNRWedgedFiller",
+                "Pillar100", "Pillar50", "Plate", "CTRPlate", "Pole", "Pyramid",
+                "Ramp", "CNRRamp", "Stairs25", "Stairs50", "Support", "Wedge",
+                "WedgeTip"]
+
+            num_block_variants = 0
+            found_working_localization = False
+            working_localized_name = ""
+            failed_localized_name = ""
+            for block_variant in block_variants:
+                if original.endswith(block_variant):
+                    #this is a variant, first check if the block without the variant plus block is in localization
+                    original_without_variant = original.split(block_variant)[0].strip()
+                    localized_name = get_localized_name(original_without_variant+"Block")
+                    if localized_name == None:
+                        #failed, now try without block at the end
+                        localized_name = get_localized_name(original_without_variant)
+                        if localized_name == None:
+                            #try again next loop with the next block variant
+                            num_block_variants += 1
+                            failed_localized_name = original_without_variant
+                            continue
+                        else:
+                            found_working_localization = True
+                            working_localized_name = localized_name
+                            break
+                    else:
+                        found_working_localization = True
+                        working_localized_name = localized_name
+                        break
+
+            #if we found a better localization for this block
+            if found_working_localization:
+                self.link = working_localized_name
+            else:
+                #confirm that this block checked for block variants
+                #this will keep blocks without any variants from throwing an error
+                if num_block_variants > 0:
+                    print("ERROR: Could not find localization for: " + original)
+                    self.link = name_to_wiki_name(failed_localized_name)
+
+
+        #use localization to get a better name for the wiki
+        if link_type == "items" or link_type == "blocks":
+            localized_name = get_localized_name(original)
+            if localized_name != None:
+                self.text = localized_name
+
+        #automatically make this a link so long as link hasnt already been set
+        if is_link and self.link == None:
             self.link = self.text
 
         self.check_for_link(link_type)
@@ -49,20 +93,6 @@ class WikiString(object):
     def check_for_link(self, link_type):
         if link_type == None:
             return
-            
-        if link_type == "blocks":
-            block_variants = ["1/2 Block", "1/4 Block", "1/8 Block", "Arrow Slit",
-                "Corner Round", "Corner Round Top", "Full Corner", "Inside Corner",
-                "Pillar 100", "Pillar 50", "Plate", "Plate Centered", "Pole", "Pyramid",
-                "Ramp", "Ramp Corner", "Stairs25", "Stairs", "Support", "Wedge",
-                "Wedge Tip", "Pillar100", "Corner Ramp"]
-
-            for block_variant in block_variants:
-                if self.text.endswith(block_variant):
-                    #set the link to link to the page without the variant
-                    self.link = self.text.split(block_variant)[0].strip() + " Blocks"
-                    print("Relinked Block Variant: " + self.text + " to " + self.link)
-                    break
 
         link_file = open("./links/links_" + link_type + ".txt", "r")
         for line in link_file.readlines():
@@ -193,6 +223,14 @@ def get_variant(name):
         else:
             shortening = False
     return name, variant
+
+def get_localized_name(name):
+    with open(get_path_settings()["txt_localization"], newline="", encoding="utf-8") as csvfile:
+        reader = csv.reader(csvfile, delimiter=",")
+        for row in reader:
+            if row[0] == name:
+                return row[4]
+    return None
 
 def convert_to_link(text, link_type, use_get_variant=False):
     variant = ""

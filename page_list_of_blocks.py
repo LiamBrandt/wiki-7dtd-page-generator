@@ -56,7 +56,7 @@ def create_table_blocks(path_settings):
             ("Extends", WikiString("", None)),
             ("Craftable", WikiString("No", None)),
             ("Group", WikiList()),
-            ("Shape", WikiString("", None)),
+            ("Repair Items", WikiList())
         ])
 
         if block_name in recipe_names:
@@ -88,6 +88,9 @@ def create_table_blocks(path_settings):
                             property_value = upgrade_property.attrib["value"]
                             if property_name == "ToBlock":
                                 table[block_name]["Upgrades To"] = WikiString(property_value, "blocks", is_link=True)
+                    elif block_property.attrib["class"] == "RepairItems":
+                        for repair_property in block_property:
+                            table[block_name]["Repair Items"].add_string(WikiString(repair_property.attrib["name"], "items", prefix=repair_property.attrib["value"]+" x ", is_link=True))
 
     #go back an remove links to dev blocks
     keys_to_remove_dev_links = ["Extends", "Upgrades To", "Downgrades To"]

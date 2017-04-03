@@ -50,3 +50,7 @@ Canyon Mine/canyon_mine
 Farm Shed/farm_shed
 House/abandoned_house/houseblue/housebrick/housegreen/houseranchblue/houseranchtan/houseranchwhite/housestucco/housetan/housetanpyramid/housewhite/housewhitepyramid/houseyellow/houseyellowpyramid/house_new_mansion/house_trailer_blue/house_trailer_burnt/house_trailer_green/house_trailer_tan/house_trailer_white/house_trailer_yellow
 Burnt House/houseburnt/houseburnt2_intact/houseburnt3b/houseburnt3_intact/houseburnt4_intact/houseburnt_deco
+Garage/garageblue/garagebrick/garageburnt/garagegreen/garagestucco/garagetan/garagewhite/garageyellow
+Pond/pond
+Jims Cars/carlot
+Apartment Building/apartment_adobe_red_5_flr/apartment_brick_6_flr

@@ -250,7 +250,7 @@ def convert_to_link(text, link_type, use_get_variant=False):
                 return "[[" + link + "]]"
 
     link_file.close()
-    return text
+    return text+variant
 
 def get_path_settings():
     with open("./settings.txt", "r") as settings_file:
@@ -265,6 +265,7 @@ def get_path_settings():
     path_settings["xml_recipes"] = path_settings["folder_config"] + "recipes.xml"
     path_settings["xml_rwgmixer"] = path_settings["folder_config"] + "rwgmixer.xml"
     path_settings["xml_blocks"] = path_settings["folder_config"] + "blocks.xml"
+    path_settings["xml_loot"] = path_settings["folder_config"] + "loot.xml"
     path_settings["xml_navezgane_prefabs"] = path_settings["folder_data"] + "Worlds/Navezgane/prefabs.xml"
 
     path_settings["txt_localization"] = path_settings["folder_config"] + "Localization.txt"

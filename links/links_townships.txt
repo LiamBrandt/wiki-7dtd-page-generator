@@ -1,2 +1,1 @@
-Rural Area/Rural
-City
+Rural Area/rural

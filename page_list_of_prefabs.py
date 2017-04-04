@@ -134,7 +134,7 @@ def create_table_prefabs(path_settings):
                     for biome in attribute["value"].split(","):
                         if biome == "snow":
                             biome = "Snowy Forest"
-                        table[prefab_name]["Biome"].add_string(WikiString(biome, "biomes"))
+                        table[prefab_name]["Biome"].add_string(WikiString(biome, "biomes", is_link=True))
                 elif attribute["name"] == "DisallowedBiomes":
                     for biome in attribute["value"].split(","):
                         print(biome + " -> " + prefab_name)
@@ -144,7 +144,7 @@ def create_table_prefabs(path_settings):
                 #Townships
                 elif attribute["name"] == "AllowedTownships":
                     for township in attribute["value"].split(","):
-                        table[prefab_name]["Townships"].add_string(WikiString(township, "townships"))
+                        table[prefab_name]["Townships"].add_string(WikiString(township, "townships", is_link=True))
                 else:
                     if attribute["name"] not in unused_keys:
                         unused_keys.append(attribute["name"])
@@ -178,7 +178,7 @@ def create_table_prefabs(path_settings):
         if filename.endswith(".tts") and path_settings["filter"] in filename:
             prefab_name, variant = get_variant(filename[:-4])
             if prefab_name not in prefab_loot_blocks:
-                prefab_loot_blocks[prefab_name] = {"variants": [variant]}
+                prefab_loot_blocks[prefab_name] = OrderedDict([("variants", [variant])])
             else:
                 prefab_loot_blocks[prefab_name]["variants"].append(variant)
 

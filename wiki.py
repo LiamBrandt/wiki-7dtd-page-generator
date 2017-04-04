@@ -98,7 +98,7 @@ class WikiString(object):
         for line in link_file.readlines():
             #list of items on the line
             line_list = line.replace("\n", "").split("/")
-            if self.text in line_list:
+            if self.original in line_list:
                 #create a link
                 self.link = line_list[0]
 

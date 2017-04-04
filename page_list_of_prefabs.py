@@ -18,6 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 import math
+import struct
+import operator
 from xml.etree import ElementTree
 from collections import OrderedDict
 
@@ -26,6 +28,39 @@ from page_random_world_generation import get_prefab_rules, get_possible_prefabs
 
 def get_sign(num):
     return 1 ^ ((num >> 31) & 0x1)
+
+def unpack(bin_file, data_type, length_arg=0):
+    #integer or unsigned integer
+    if data_type == "i" or data_type == "I":
+        return int(struct.unpack(data_type, bin_file.read(4))[0])
+    #short or unsigned short
+    elif data_type == "h" or data_type == "H":
+        return int(struct.unpack(data_type, bin_file.read(2))[0])
+    #string
+    elif data_type == "s":
+        return struct.unpack(str(length_arg) + data_type, bin_file.read(length_arg))[0]
+    #char
+    elif data_type == "c":
+        return struct.unpack(data_type, bin_file.read(1))[0]
+    #byte or unsigned byte
+    elif data_type == "b" or data_type == "B":
+        return int(struct.unpack(data_type, bin_file.read(1))[0])
+
+def get_loot_blocks(path_settings):
+    loot_blocks = {}
+    xml_root = ElementTree.parse(path_settings["xml_blocks"]).getroot()
+    for block in xml_root:
+        block_name = block.attrib["name"]
+        block_id = block.attrib["id"]
+
+        #check if this block is a loot container
+        for block_property in block:
+            if block_property.tag == "property":
+                #property has a name
+                if "name" in block_property.attrib:
+                    if block_property.attrib["name"] == "LootList":
+                        loot_blocks[block_id] = block_name
+    return loot_blocks
 
 class PrefabWikiTable(WikiTable):
     def write_entry(self, key, value, table_file):
@@ -37,6 +72,11 @@ class PrefabWikiTable(WikiTable):
                     table_file.write("<div class='mw-collapsible mw-collapsed'><small>" + wiki_text + "</small></div>")
                 else:
                     table_file.write("<small>" + wiki_text + "</small>")
+            elif key == "Loot Containers":
+                if value.get_length() > 3:
+                    table_file.write("<div class='mw-collapsible mw-collapsed'>" + wiki_text + "</div>")
+                else:
+                    table_file.write(wiki_text)
             else:
                 table_file.write(wiki_text)
 
@@ -78,6 +118,7 @@ def create_table_prefabs(path_settings):
                     ("Townships", WikiList()),
                     ("Locations", WikiList()),
                     ("Random World Generation", WikiString("No", None, no_format=True)),
+                    ("Loot Containers", WikiList()),
                 ])
                 if prefab_name+variant in possible_prefabs:
                     table[prefab_name]["Random World Generation"] = WikiString("Yes", None, no_format=True)
@@ -109,6 +150,7 @@ def create_table_prefabs(path_settings):
                         unused_keys.append(attribute["name"])
     print("Unused Prefab Keys: " + str(unused_keys))
 
+    #add locations
     for prefab_name, prefab in table.items():
         root = ElementTree.parse(path_settings["xml_navezgane_prefabs"]).getroot()
         for decoration in root:
@@ -129,6 +171,54 @@ def create_table_prefabs(path_settings):
                     location += " W"
                 table[prefab_name]["Locations"].add_string(WikiString(location, "locations", no_format=True))
 
+    #find loot containers
+    loot_blocks = get_loot_blocks(path_settings)
+    prefab_loot_blocks = {}
+    for filename in os.listdir(path_settings["folder_prefabs"]):
+        if filename.endswith(".tts") and path_settings["filter"] in filename:
+            prefab_name, variant = get_variant(filename[:-4])
+            if prefab_name not in prefab_loot_blocks:
+                prefab_loot_blocks[prefab_name] = {"variants": [variant]}
+            else:
+                prefab_loot_blocks[prefab_name]["variants"].append(variant)
+
+            for block_id in loot_blocks:
+                if block_id not in prefab_loot_blocks[prefab_name]:
+                    prefab_loot_blocks[prefab_name][block_id] = {variant: 0}
+
+            bin_file = open(path_settings["folder_prefabs"] + filename, "rb")
+            tts_prefab = {}
+            tts_prefab["header"] = unpack(bin_file, "s", 4)
+            tts_prefab["version"] = unpack(bin_file, "I")
+            tts_prefab["x"] = unpack(bin_file, "H")
+            tts_prefab["y"] = unpack(bin_file, "H")
+            tts_prefab["z"] = unpack(bin_file, "H")
+
+            for i in range(tts_prefab["x"]*tts_prefab["y"]*tts_prefab["z"]):
+                block_data = unpack(bin_file, "I")
+                block_id = str(block_data & 2047)
+
+                if block_id in loot_blocks:
+                    if variant not in prefab_loot_blocks[prefab_name][block_id]:
+                        prefab_loot_blocks[prefab_name][block_id][variant] = 1
+                    else:
+                        prefab_loot_blocks[prefab_name][block_id][variant] += 1
+    #add loot containers
+    for prefab_name, prefab in table.items():
+        for block_id in prefab_loot_blocks[prefab_name]:
+            if block_id != "variants":
+                variants = prefab_loot_blocks[prefab_name][block_id]
+                min_num = min(variants.items(), key=operator.itemgetter(1))[1]
+                max_num = max(variants.items(), key=operator.itemgetter(1))[1]
+                prefix = "(" + str(min_num) + " - " + str(max_num) + ") x "
+                if min_num == max_num:
+                    #make sure not to write loot containers that appear zero times
+                    if min_num == 0:
+                        continue
+                    prefix = str(min_num) + " x "
+                table[prefab_name]["Loot Containers"].add_string(WikiString(loot_blocks[block_id], "blocks", is_link=True, prefix=prefix))
+
+    #reset single variant names
     for prefab_name, prefab in table.items():
         #if there was only one variant on this prefab, get rid of the variants and put it back into the prefab name
         if prefab["Variants"].get_length() == 1:

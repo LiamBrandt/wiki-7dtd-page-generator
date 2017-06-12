@@ -102,7 +102,7 @@ def get_prefab_rules(path_settings):
     return prefab_rules
 
 def get_possible_prefabs(prefab_rules):
-    top_level_rules = ["townBuildings", "wastelandHub", "wildernessPOIs"]
+    top_level_rules = ["default", "wildernessGroup"]
     possible_prefabs = []
     for prefab_rule in prefab_rules:
         if prefab_rule.name in top_level_rules:

@@ -18,7 +18,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import csv
 import os
+import struct
 from re import finditer
+from xml.etree import ElementTree
+from collections import OrderedDict
+
+def unpack(bin_file, data_type, length_arg=0):
+    #integer or unsigned integer
+    if data_type == "i" or data_type == "I":
+        return int(struct.unpack(data_type, bin_file.read(4))[0])
+    #short or unsigned short
+    elif data_type == "h" or data_type == "H":
+        return int(struct.unpack(data_type, bin_file.read(2))[0])
+    #string
+    elif data_type == "s":
+        return struct.unpack(str(length_arg) + data_type, bin_file.read(length_arg))[0]
+    #char
+    elif data_type == "c":
+        return struct.unpack(data_type, bin_file.read(1))[0]
+    #byte or unsigned byte
+    elif data_type == "b" or data_type == "B":
+        return int(struct.unpack(data_type, bin_file.read(1))[0])
 
 class WikiString(object):
     def __init__(self, original, link_type, no_format=False, prefix="", postfix="", is_link=False):
@@ -252,6 +272,93 @@ def convert_to_link(text, link_type, use_get_variant=False):
     link_file.close()
     return text+variant
 
+def discover_flags(path_settings):
+    found_block_ids = []
+    flags = {}
+    for filename in os.listdir(path_settings["folder_prefabs"]):
+        if filename.endswith(".tts") and path_settings["filter"] in filename:
+            bin_file = open(path_settings["folder_prefabs"] + filename, "rb")
+            tts_prefab = {}
+            tts_prefab["header"] = unpack(bin_file, "s", 4)
+            tts_prefab["version"] = unpack(bin_file, "I")
+            tts_prefab["x"] = unpack(bin_file, "H")
+            tts_prefab["y"] = unpack(bin_file, "H")
+            tts_prefab["z"] = unpack(bin_file, "H")
+
+            for i in range(tts_prefab["x"]*tts_prefab["y"]*tts_prefab["z"]):
+                block_data = unpack(bin_file, "I")
+                found_block_id = str(block_data & 2047)
+                if found_block_id not in found_block_ids:
+                    found_block_ids.append(found_block_id)
+                    block_name = get_block_name(path_settings, found_block_id)
+
+                    bin_string = "{0:b}".format(block_data).zfill(32)[:-11]
+                    #print(bin_string + " -> " + block_name)
+                    for index, bit in enumerate(bin_string):
+                        if bit == "1":
+                            if index not in flags:
+                                flags[index] = []
+                            if block_name not in flags[index]:
+                                flags[index].append(block_name)
+            print(flags)
+    print("\n\n\nFINAL\n\n\n")
+    print(flags)
+
+def get_block_name(path_settings, block_id):
+    root = ElementTree.parse(path_settings["xml_blocks"]).getroot()
+    for block in root:
+        if int(block.attrib["id"]) == int(block_id):
+            return block.attrib["name"]
+
+def get_prefab_with_most_block(path_settings, block_id):
+    #find loot containers
+    prefab_loot_blocks = {}
+    for filename in os.listdir(path_settings["folder_prefabs"]):
+        if filename.endswith(".tts") and path_settings["filter"] in filename:
+            prefab_name, variant = get_variant(filename[:-4])
+            if prefab_name not in prefab_loot_blocks:
+                prefab_loot_blocks[prefab_name] = OrderedDict([("variants", [variant])])
+            else:
+                prefab_loot_blocks[prefab_name]["variants"].append(variant)
+
+            if block_id not in prefab_loot_blocks[prefab_name]:
+                prefab_loot_blocks[prefab_name][block_id] = {}
+            prefab_loot_blocks[prefab_name][block_id][variant] = 0
+
+            bin_file = open(path_settings["folder_prefabs"] + filename, "rb")
+            tts_prefab = {}
+            tts_prefab["header"] = unpack(bin_file, "s", 4)
+            tts_prefab["version"] = unpack(bin_file, "I")
+            tts_prefab["x"] = unpack(bin_file, "H")
+            tts_prefab["y"] = unpack(bin_file, "H")
+            tts_prefab["z"] = unpack(bin_file, "H")
+
+            for i in range(tts_prefab["x"]*tts_prefab["y"]*tts_prefab["z"]):
+                block_data = unpack(bin_file, "I")
+                found_block_id = str(block_data & 2047)
+
+                if found_block_id == str(block_id):
+                    prefab_loot_blocks[prefab_name][block_id][variant] += 1
+
+    #report
+    prefab_list = {}
+    for prefab_name, prefab in prefab_loot_blocks.items():
+        for tag, data in prefab.items():
+            if tag == block_id:
+                for variant_name, count in data.items():
+                    if count > 0:
+                        if prefab_name not in prefab_list:
+                            #determine whether prefab should be considered for max
+                            if "[[" in WikiString(prefab_name, "prefabs").get_wiki_text():
+                                prefab_list[prefab_name] = count
+                        else:
+                            if count > prefab_list[prefab_name]:
+                                prefab_list[prefab_name] = count
+                        #print(prefab_name + variant_name + " -> " + str(count))
+    if len(prefab_list) > 0:
+        return max(prefab_list, key=lambda key: prefab_list[key])
+    return ""
+
 def get_path_settings():
     with open("./settings.txt", "r") as settings_file:
         path_settings = eval(settings_file.read())
@@ -266,6 +373,7 @@ def get_path_settings():
     path_settings["xml_rwgmixer"] = path_settings["folder_config"] + "rwgmixer.xml"
     path_settings["xml_blocks"] = path_settings["folder_config"] + "blocks.xml"
     path_settings["xml_loot"] = path_settings["folder_config"] + "loot.xml"
+    path_settings["xml_entity_classes"] = path_settings["folder_config"] + "entityclasses.xml"
     path_settings["xml_navezgane_prefabs"] = path_settings["folder_data"] + "Worlds/Navezgane/prefabs.xml"
 
     path_settings["txt_localization"] = path_settings["folder_config"] + "Localization.txt"

@@ -114,7 +114,7 @@ def create_table_prefabs(path_settings):
                     ("Prefab", WikiString(prefab_name, "prefabs", no_format=True)),
                     ("Variants", WikiList()),
                     ("Biome", WikiList(default="Any")),
-                    ("Zoning", WikiString("", "zones")),
+                    ("Zoning", WikiList()),
                     ("Townships", WikiList()),
                     ("Locations", WikiList()),
                     ("Random World Generation", WikiString("No", None, no_format=True)),
@@ -140,7 +140,8 @@ def create_table_prefabs(path_settings):
                         print(biome + " -> " + prefab_name)
                 #Zoning
                 elif attribute["name"] == "Zoning":
-                    table[prefab_name]["Zoning"] = WikiString(attribute["value"], "zones")
+                    for zone in attribute["value"].split(","):
+                        table[prefab_name]["Zoning"].add_string(WikiString(zone, "zones"))
                 #Townships
                 elif attribute["name"] == "AllowedTownships":
                     for township in attribute["value"].split(","):
